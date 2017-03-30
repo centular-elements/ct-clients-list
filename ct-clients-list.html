@@ -1,0 +1,101 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-data-table/iron-data-table.html">
+
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+
+<!--
+`ct-clients-list`
+List of client applications
+
+@demo demo/index.html 
+-->
+
+<dom-module id="ct-clients-list">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <iron-data-table items="[[ clients ]]">
+      <data-table-column name="Logo">
+        <template></template>
+      </data-table-column>
+      <data-table-column name="Name">
+        <template>[[ item.name ]]</template>
+      </data-table-column>
+      <data-table-column name="Client ID">
+        <template>[[ item.clientId ]]</template>
+      </data-table-column>
+      <data-table-column name="Type">
+        <template>Web Application</template>
+      </data-table-column>
+      <data-table-column name="Secret">
+        <template></template>
+      </data-table-column>
+      <data-table-column name="Token Redirect URL">
+        <template>[[ item.tokenRedirectUri ]]</template>
+      </data-table-column>
+      <data-table-column name="Token Expires In (minutes)">
+        <template>[[ item.tokenExpirationMinutes ]]</template>
+      </data-table-column>
+      <data-table-column name="Sign-up Group">
+        <template>[[ item.signUpGroupId ]]</template>
+      </data-table-column>
+      <data-table-column name="Actions">
+        <template>
+          <paper-icon-button id="editButton" icon="icons:build" item="[[ item ]]" on-tap="_editClient"></paper-icon-button>
+          <paper-icon-button id="deleteButton" icon="icons:clear" item="[[ item ]]" on-tap="_deleteClient"></paper-icon-button>
+        </template>
+      </data-table-column>
+    </iron-data-table>
+
+    <paper-dialog id="confirmation">
+      <p>Are you sure you want to delete this client?<p>
+      <div class="buttons">
+        <paper-button dialog-confirm on-tap="_deleteClient">Yes</paper-button>
+        <paper-button dialog-dismiss autofocus>No</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'ct-clients-list',
+
+      /**
+       * Fired on client edit
+       * @param {Object} detail The client to edit
+       * @event ct-edit-client
+       */
+
+      /**
+       * Fired on client delete
+       * @param {Object} detail The client to delete
+       * @event ct-edit-client
+       */
+
+      properties: {
+        clients: Object
+      },
+
+      _editClient: function(e) {
+        this.fire('ct-edit-client', e.currentTarget.item)
+      },
+
+      _showConfirmation: function(e) {
+        this._clientToDelete = e.currentTarget.item;
+        this.$.confirmation.open();
+      },
+
+      _deleteClient: function(e) {
+        this.fire('ct-delete-client', this._clientToDelete)
+      }
+    });
+  </script>
+</dom-module>
