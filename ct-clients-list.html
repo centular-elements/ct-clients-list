@@ -24,7 +24,7 @@ List of client applications
 
     <iron-data-table items="[[ clients ]]">
       <data-table-column name="Logo">
-        <template></template>
+        <template><img href="[[ _getClientLogoUrl(client) ]]"></template>
       </data-table-column>
       <data-table-column name="Name">
         <template>[[ item.name ]]</template>
@@ -83,6 +83,10 @@ List of client applications
 
       properties: {
         clients: Object
+      },
+
+      _getClientLogoUrl: function(client) {
+        return "http://resource.centular.com/" + client.id + "/logo.jpg";
       },
 
       _editClient: function(e) {
