@@ -49,7 +49,7 @@ List of client applications
       <data-table-column name="Actions">
         <template>
           <paper-icon-button id="editButton" icon="icons:build" item="[[ item ]]" on-tap="_editClient"></paper-icon-button>
-          <paper-icon-button id="deleteButton" icon="icons:clear" item="[[ item ]]" on-tap="_deleteClient"></paper-icon-button>
+          <paper-icon-button id="deleteButton" icon="icons:clear" item="[[ item ]]" on-tap="_showConfirmation"></paper-icon-button>
         </template>
       </data-table-column>
     </iron-data-table>
