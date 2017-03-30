@@ -24,7 +24,7 @@ List of client applications
 
     <iron-data-table items="[[ clients ]]">
       <data-table-column name="Logo">
-        <template><img href="[[ _getClientLogoUrl(client) ]]"></template>
+        <template><img href="[[ _getClientLogoUrl(item) ]]"></template>
       </data-table-column>
       <data-table-column name="Name">
         <template>[[ item.name ]]</template>
