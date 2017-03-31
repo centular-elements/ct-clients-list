@@ -31,7 +31,7 @@ List of client applications
     <ct-domains-api id="domainsApi"></ct-domains-api>
     <ct-clients-api id="clientsApi"></ct-clients-api>
 
-    <template is="dom-if" if="[[ _otherClients ]]">
+    <template is="dom-if" if="[[ _showOtherClients ]]">
       <paper-dropdown-menu label="Add Existing Client" selected="-1">
         <paper-listbox class="dropdown-content">
           <template is="dom-repeat" items="[[ _otherClients ]]" as="client">
@@ -132,6 +132,7 @@ List of client applications
                                       return dc.id == client.id
                                     }) == null;
                           }.bind(this));
+                  this._showOtherClients = this._otherClients.length > 0;
                   this.refreshing = false;
                 }.bind(this))
                 .catch(function (error) {
