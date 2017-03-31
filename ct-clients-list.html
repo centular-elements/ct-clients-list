@@ -150,7 +150,7 @@ List of client applications
 
       _linkNewClient: function() {
         this.$.domainsApi.linkClient(
-                this.routeData.domainId,
+                CT.identity.domainId,
                 this._selectedClient.id, {
                   tokenRedirectUri: this.$.tokenRedirectUriInput.value,
                   tokenExpirationMinutes: parseInt(this.$.tokenExpirationMinutesInput.value),
@@ -172,7 +172,7 @@ List of client applications
       },
 
       _deleteClient: function(e) {
-        this.$.clientsApi.deleteClient(_clientToDelete.id)
+        this.$.clientsApi.deleteClient(this._clientToDelete.id)
                 .then(function (request) {
                   this.refresh();
                 }.bind(this))
