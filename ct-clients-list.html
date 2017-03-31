@@ -6,6 +6,12 @@
 
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../paper-item/paper-item.html">
+
+<link rel="import" href="../ct-clients-api/ct-clients-api.html">
+<link rel="import" href="../ct-domains-api/ct-domains-api.html">
 
 <!--
 `ct-clients-list`
@@ -22,7 +28,31 @@ List of client applications
       }
     </style>
 
-    <iron-data-table items="[[ clients ]]">
+    <ct-domains-api id="domainsApi"></ct-domains-api>
+    <ct-clients-api id="clientsApi"></ct-clients-api>
+
+    <template is="dom-if" if="[[ _otherClients ]]">
+      <paper-dropdown-menu label="Add Existing Client" selected="-1">
+        <paper-listbox class="dropdown-content">
+          <template is="dom-repeat" items="[[ _otherClients ]]" as="client">
+            <paper-item client="[[ client ]]" on-tap="_otherClientSelected">[[ client.name ]]</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </template>
+
+    <paper-dialog id="addClientDialog">
+      <p>[[ _selectedClient.name ]]<p>
+      <paper-input id="tokenRedirectUriInput" label="Token Redirect URI" value="[[ _selectedClient.tokenRedirectUri ]]"></paper-input>
+      <paper-input id="tokenExpirationMinutesInput" label="Token Expires In Minutes" value="[[ _selectedClient.tokenExpirationMinutes ]]"></paper-input>
+      <paper-input id="signUpGroupIdInput" label="Sign Up Group" value="[[ _selectedClient.signUpGroupId ]]"></paper-input>
+      <div class="buttons">
+        <paper-button dialog-confirm on-tap="_linkNewClient">Ok</paper-button>
+        <paper-button dialog-dismiss autofocus>Cancel</paper-button>
+      </div>
+    </paper-dialog>
+
+    <iron-data-table items="[[ _domainClients ]]">
       <data-table-column name="Logo">
         <template><img href="[[ _getClientLogoUrl(item) ]]"></template>
       </data-table-column>
@@ -82,11 +112,53 @@ List of client applications
        */
 
       properties: {
-        clients: Object
+        refreshing: {
+          type: Boolean,
+          notify: true
+        }
+      },
+
+      refresh: function() {
+        this.refreshing = true;
+        this.$.clientsApi.findClients()
+                .then(function (request) {
+                  this._domainClients =
+                          request.response.filter(function(client) {
+                            return CT.identity.domainId == client.domainId;
+                          }.bind(this));
+                  this._otherClients =
+                          request.response.filter(function(client) {
+                            return CT.identity.domainId != client.domainId && this._domainClients.find(function(dc) {
+                                      return dc.id == client.id
+                                    }) == null;
+                          }.bind(this));
+                  this.refreshing = false;
+                }.bind(this))
+                .catch(function (error) {
+                }.bind(this));
       },
 
       _getClientLogoUrl: function(client) {
         return "http://resource.centular.com/" + client.id + "/logo.jpg";
+      },
+
+      _otherClientSelected: function(e) {
+        this._selectedClient = e.currentTarget.client;
+        this.$.addClientDialog.open();
+      },
+
+      _linkNewClient: function() {
+        this.$.domainsApi.linkClient(
+                this.routeData.domainId,
+                this._selectedClient.id, {
+                  tokenRedirectUri: this.$.tokenRedirectUriInput.value,
+                  tokenExpirationMinutes: parseInt(this.$.tokenExpirationMinutesInput.value),
+                  signUpGroupId: this.$.signUpGroupIdInput.value})
+                .then(function (request) {
+                  this.refresh();
+                }.bind(this))
+                .catch(function (error) {
+                }.bind(this));
       },
 
       _editClient: function(e) {
@@ -99,7 +171,12 @@ List of client applications
       },
 
       _deleteClient: function(e) {
-        this.fire('ct-delete-client', this._clientToDelete)
+        this.$.clientsApi.deleteClient(_clientToDelete.id)
+                .then(function (request) {
+                  this.refresh();
+                }.bind(this))
+                .catch(function (error) {
+                }.bind(this));
       }
     });
   </script>
