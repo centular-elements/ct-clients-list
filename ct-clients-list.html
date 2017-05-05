@@ -46,6 +46,8 @@ List of client applications
       <paper-input id="tokenRedirectUriInput" label="Token Redirect URI" value="[[ _selectedClient.tokenRedirectUri ]]"></paper-input>
       <paper-input id="tokenExpirationMinutesInput" label="Token Expires In Minutes" value="[[ _selectedClient.tokenExpirationMinutes ]]"></paper-input>
       <paper-input id="signUpGroupIdInput" label="Sign Up Group" value="[[ _selectedClient.signUpGroupId ]]"></paper-input>
+      <paper-input id="invitationsUrlInput" label="Invitations Url" value="[[ _selectedClient.invitationsUrl ]]"></paper-input>
+      <paper-input id="homeUrlInput" label="Home Url" value="[[ _selectedClient.homeUrl ]]"></paper-input>
       <div class="buttons">
         <paper-button dialog-confirm on-tap="_linkNewClient">Ok</paper-button>
         <paper-button dialog-dismiss autofocus>Cancel</paper-button>
@@ -76,6 +78,12 @@ List of client applications
       </data-table-column>
       <data-table-column name="Sign-up Group">
         <template>[[ item.signUpGroupId ]]</template>
+      </data-table-column>
+      <data-table-column name="Invitation URL">
+        <template>[[ item.invitationUrl ]]</template>
+      </data-table-column>
+      <data-table-column name="Home URL">
+        <template>[[ item.homeUrl ]]</template>
       </data-table-column>
       <data-table-column name="Actions">
         <template>
@@ -154,7 +162,9 @@ List of client applications
                 this._selectedClient.id, {
                   tokenRedirectUri: this.$.tokenRedirectUriInput.value,
                   tokenExpirationMinutes: parseInt(this.$.tokenExpirationMinutesInput.value),
-                  signUpGroupId: this.$.signUpGroupIdInput.value})
+                  signUpGroupId: this.$.signUpGroupIdInput.value,
+                  invitationsUrl: this.$.invitationsUrlInput.value,
+                  homeUrl: this.$.homeUrlInput.value})
                 .then(function (request) {
                   this.refresh();
                 }.bind(this))
